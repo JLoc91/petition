@@ -1,0 +1,20 @@
+* {
+    background-color: bisque;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+canvas {
+    position: absolute;
+    /* width: 65vw;
+    height: 20vh; */
+    border: 3px solid red;
+    left: 200px;
+    top: 200px;
+}
+
+img.icon {
+    width: 20vw;
+}

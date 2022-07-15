@@ -1,19 +1,19 @@
 const spicedPg = require("spiced-pg");
 const user = "jloco";
 const password = "postgres";
-const database = "petition";
-const table = "signatures";
+const database = "julien";
+const table = "actors";
 // const db = spicedPg(`postgres:${user}:${password}@localhost:5432/${database}`);
 const db = spicedPg(`postgres:${user}:${password}@localhost:5432/${database}`);
 
-module.exports.getSigners = () => {
+module.exports.getActors = () => {
     return db.query(`select * from ${table}`);
 };
 
-module.exports.addSigner = (first, last, signature) => {
+module.exports.addActor = (Name, Age, number_of_actors) => {
     return db.query(
-        `INSERT INTO ${table}(first, last, signature)
+        `INSERT INTO ${table}(Name, Age, number_of_actors)
         VALUES ($1, $2, $3)`,
-        [first, last, signature]
+        [Name, Age, number_of_actors]
     );
 };
