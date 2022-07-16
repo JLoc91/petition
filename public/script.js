@@ -1,6 +1,6 @@
 // this is where your canvas / signature code will go
 const canvas = $("canvas");
-
+const submit = $("#submit");
 const ctx = canvas[0].getContext("2d");
 let mousedown = false;
 
@@ -20,9 +20,9 @@ function makeSignature(e) {
 $(document).on("mouseup", function () {
     const dataURL = canvas[0].toDataURL();
     canvas.val(dataURL);
-    console.log("dataURL: ", dataURL);
-    console.log("drawing over???????????????????????????????");
-    console.log("canvas.val(): ", canvas.val());
+    // console.log("dataURL: ", dataURL);
+    // console.log("drawing over???????????????????????????????");
+    // console.log("canvas.val(): ", canvas.val());
     mousedown = false;
     // canvas.off("mousemove");
 });
@@ -36,7 +36,18 @@ canvas.on("mousemove", (e) => {
 
         ctx.lineTo(drawX, drawY);
         ctx.stroke();
-        console.log("drawX: ", drawX);
-        console.log("drawY: ", drawY);
+        // console.log("drawX: ", drawX);
+        // console.log("drawY: ", drawY);
     }
 });
+
+submit.on("mouseup", makeSubmit);
+
+function makeSubmit() {
+    const firstInput = $("[name='first']").val();
+    const lastInput = $("[name='last']").val();
+    const canvasInput = canvas.val();
+    console.log("firstInput: ", firstInput);
+    console.log("lastInput: ", lastInput);
+    console.log("canvasInput: ", canvasInput);
+}

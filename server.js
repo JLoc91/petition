@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const app = express();
 const db = require("./db");
 const hb = require("express-handlebars");
@@ -20,6 +21,7 @@ app.set("view engine", "handlebars");
 //END Handlebars config
 
 console.log("db in server.js: ", db);
+app.use(cookieParser());
 
 app.use(express.static("./public"));
 app.use(express.static("./images"));
@@ -35,24 +37,39 @@ app.post("/", (req, res) => {
     db.addSigner(req.body.first, req.body.last, req.body.signature)
         .then(() => {
             console.log("yay it worked");
+            res.cookie("signed", true);
         })
         .catch((err) => console.log("err in addSigner: ", err));
 });
 
+app.get("/thanks", (req, res) => {
+    console.log("get req to / route just happened!");
+    res.render("home", {
+        layouts: "main",
+    });
+});
+
+app.get("/signers", (req, res) => {
+    console.log("get req to / route just happened!");
+    res.render("home", {
+        layouts: "main",
+    });
+});
+
 // app.get("/", (req, res) => {});
 
-app.get("/actors", (req, res) => {
-    db.getActors()
-        .then((results) => console.log("results from getActors", results.rows))
-        .catch((err) => console.log("err in getActors: ", err));
-});
+// app.get("/actors", (req, res) => {
+//     db.getActors()
+//         .then((results) => console.log("results from getActors", results.rows))
+//         .catch((err) => console.log("err in getActors: ", err));
+// });
 
-app.post("/add-actor", (req, res) => {
-    db.addActor("Name", "Age", "Number of Oscars")
-        .then(() => {
-            console.log("yay it worked");
-        })
-        .catch((err) => console.log("err in addActor: ", err));
-});
+// app.post("/add-actor", (req, res) => {
+//     db.addActor("Name", "Age", "Number of Oscars")
+//         .then(() => {
+//             console.log("yay it worked");
+//         })
+//         .catch((err) => console.log("err in addActor: ", err));
+// });
 
 app.listen(PORT, () => console.log("petition server is listening..."));
