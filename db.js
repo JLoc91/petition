@@ -10,6 +10,10 @@ module.exports.getSigners = () => {
     return db.query(`select * from ${table}`);
 };
 
+module.exports.getNumSigners = () => {
+    return db.query(`select count(signature) from ${table}`);
+};
+
 module.exports.addSigner = (first, last, signature) => {
     return db.query(
         `INSERT INTO ${table}(first, last, signature)

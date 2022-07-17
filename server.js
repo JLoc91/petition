@@ -31,13 +31,23 @@ app.use(express.static("./public"));
 app.use(express.static("./images"));
 
 app.get("/", (req, res) => {
-    console.log("get req to / route just happened!");
-    res.render("home", {
-        layouts: "main",
-    });
+    // res.statusCode(301);
+    res.redirect("/petition");
 });
 
-app.post("/", (req, res) => {
+app.get("/petition", (req, res) => {
+    if (req.cookies.signed) {
+        console.log("already signed petition");
+        res.redirect("/thanks");
+    } else {
+        console.log("get req to / route just happened!");
+        res.render("home", {
+            layouts: "main",
+        });
+    }
+});
+
+app.post("/petition", (req, res) => {
     // console.log("req.body: ", req.body);
     db.addSigner(req.body.first, req.body.last, req.body.signature)
         .then(() => {
@@ -48,15 +58,26 @@ app.post("/", (req, res) => {
         .catch((err) => console.log("err in addSigner: ", err));
 });
 
+// request to render the "thanks" page to thank the signers after signing
+// and show them how many people have already signed and a link to those people
 app.get("/thanks", (req, res) => {
     console.log("get req to '/thanks' route just happened!");
-    if (req.cookies.signed) {
-        console.log("Succesfully signed!");
-        res.send(`<h1>Thank you for signing our Petition!</h1>`);
-    } else {
-        console.log("tried to enter '/thanks' route without signing petition");
-        res.redirect("/");
-    }
+    db.getNumSigners()
+        .then((result) => {
+            // console.log("result.rows[0].count: ", result.rows[0].count);
+            if (req.cookies.signed) {
+                console.log("Succesfully signed!");
+                res.render("thanks", {
+                    numSigner: result.rows[0].count,
+                });
+            } else {
+                console.log(
+                    "tried to enter '/thanks' route without signing petition"
+                );
+                res.redirect("/petition");
+            }
+        })
+        .catch((err) => console.log("err in getNumSigners: ", err));
 
     // res.render("home", {
     //     layouts: "main",
@@ -80,7 +101,7 @@ app.get("/signers", (req, res) => {
             console.log(
                 "tried to enter '/signers' route without signing petition"
             );
-            res.redirect("/");
+            res.redirect("/petition");
         }
     });
     console.log("get req to / route just happened!");
