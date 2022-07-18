@@ -3,55 +3,76 @@ const canvas = $("canvas");
 const submit = $("#submit");
 const signatureInput = $("[name='signature']");
 const ctx = canvas[0].getContext("2d");
-let mousedown = false;
+let trigger = false;
+const startTrigger = ["touchstart", "mousedown"];
+const moveTrigger = ["touchmove", "mousemove"];
+const endTrigger = ["touchend", "mouseup"];
 
-canvas.on("mousedown", makeSignature);
+const mobileCondition =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent) ||
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.platform);
 
-function makeSignature(e) {
+if (mobileCondition) {
+    console.log("MOBILE");
+    canvas.on(startTrigger[0], startSignature);
+    $(document).on(endTrigger[0], endSignature);
+    canvas.on(moveTrigger[0], writeSignature);
+} else {
+    console.log("NOOOOOOOT MOBILE");
+
+    canvas.on(startTrigger[1], startSignature);
+    $(document).on(endTrigger[1], endSignature);
+    canvas.on(moveTrigger[1], writeSignature);
+}
+
+function startSignature(e) {
     e.preventDefault();
     console.log("start drawing!!!!!!!!!!!!!!!!!!!!!!!!!!");
-    mousedown = true;
+    trigger = true;
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2.5;
     ctx.lineCap = "round";
     ctx.beginPath();
-    ctx.moveTo(e.pageX - canvas.offset().left, e.pageY - canvas.offset().top);
+    if (mobileCondition) {
+        ctx.moveTo(
+            e.originalEvent.touches[0].pageX - canvas.offset().left,
+            e.originalEvent.touches[0].pageY - canvas.offset().top
+        );
+    } else {
+        ctx.moveTo(
+            e.pageX - canvas.offset().left,
+            e.pageY - canvas.offset().top
+        );
+    }
 }
 
-$(document).on("mouseup", function () {
+function endSignature() {
     const dataURL = canvas[0].toDataURL();
     canvas.val(dataURL);
     signatureInput.val(dataURL);
+    trigger = false;
+}
 
-    // console.log("dataURL: ", dataURL);
-    // console.log("drawing over???????????????????????????????");
-    // console.log("canvas.val(): ", canvas.val());
-    mousedown = false;
-    // canvas.off("mousemove");
-});
-
-canvas.on("mousemove", (e) => {
-    if (mousedown) {
-        const drawX = e.pageX - canvas.offset().left;
-        const drawY = e.pageY - canvas.offset().top;
-
-        // console.log("e.pageX: ", e.pageX);
-
-        ctx.lineTo(drawX, drawY);
-        ctx.stroke();
-        // console.log("drawX: ", drawX);
-        // console.log("drawY: ", drawY);
+function writeSignature(e) {
+    if (trigger) {
+        if (mobileCondition) {
+            console.log("mal wieder mobile");
+            const drawX =
+                e.originalEvent.touches[0].pageX - canvas.offset().left;
+            const drawY =
+                e.originalEvent.touches[0].pageY - canvas.offset().top;
+            ctx.lineTo(drawX, drawY);
+            ctx.stroke();
+            console.log(
+                "e.originalEvent.touches[0].pageX: ",
+                e.originalEvent.touches[0].pageX
+            );
+        } else {
+            const drawX = e.pageX - canvas.offset().left;
+            const drawY = e.pageY - canvas.offset().top;
+            ctx.lineTo(drawX, drawY);
+            ctx.stroke();
+            console.log("e.pageX: ", e.pageX);
+        }
     }
-});
-
-// submit.on("mouseup", makeSubmit);
-
-// function makeSubmit() {
-//     const firstInput = $("[name='first']").val();
-//     const lastInput = $("[name='last']").val();
-//     const
-//     const canvasInput = canvas.val();
-//     console.log("firstInput: ", firstInput);
-//     console.log("lastInput: ", lastInput);
-//     console.log("canvasInput: ", canvasInput);
-// }
+}

@@ -8,6 +8,7 @@ app.use(
     cookieSession({
         secret: `Dumm ist der, der dummes tut.`,
         maxAge: 1000 * 60 * 60 * 24 * 14,
+        sameSite: true,
     })
 );
 
@@ -73,29 +74,27 @@ app.post("/petition", (req, res) => {
 // and show them how many people have already signed and a link to those people
 app.get("/thanks", (req, res) => {
     console.log("get req to '/thanks' route just happened!");
-    db.getSignature(req.session.signatureId)
-        .then((result) => {
-            const signature = result.rows[0].signature;
-            db.getNumSigners()
-                .then((result) => {
-                    // console.log("result.rows[0].count: ", result.rows[0].count);
-                    if (req.cookies.session) {
-                        console.log("Succesfully signed!");
+    if (req.cookies.session) {
+        console.log("Succesfully signed!");
+        db.getSignature(req.session.signatureId)
+            .then((result) => {
+                const signature = result.rows[0].signature;
+                db.getNumSigners()
+                    .then((result) => {
+                        // console.log("result.rows[0].count: ", result.rows[0].count);
                         const numSigners = result.rows[0].count;
                         res.render("thanks", {
                             signature,
                             numSigner: result.rows[0].count,
                         });
-                    } else {
-                        console.log(
-                            "tried to enter '/thanks' route without signing petition"
-                        );
-                        res.redirect("/petition");
-                    }
-                })
-                .catch((err) => console.log("err in getNumSigners: ", err));
-        })
-        .catch((err) => console.log("err in getSignature: ", err));
+                    })
+                    .catch((err) => console.log("err in getNumSigners: ", err));
+            })
+            .catch((err) => console.log("err in getSignature: ", err));
+    } else {
+        console.log("tried to enter '/thanks' route without signing petition");
+        res.redirect("/petition");
+    }
 });
 
 app.get("/signers", (req, res) => {
