@@ -10,6 +10,12 @@ module.exports.getSigners = () => {
     return db.query(`select * from ${table}`);
 };
 
+module.exports.getSignature = (id) => {
+    // console.log("id.rows[0].id: ", id.rows[0].id);
+    return db.query(`select signature from ${table}
+                    where id = ${id.rows[0].id}`);
+};
+
 module.exports.getNumSigners = () => {
     return db.query(`select count(signature) from ${table}`);
 };
@@ -17,7 +23,7 @@ module.exports.getNumSigners = () => {
 module.exports.addSigner = (first, last, signature) => {
     return db.query(
         `INSERT INTO ${table}(first, last, signature)
-        VALUES ($1, $2, $3)`,
+        VALUES ($1, $2, $3) returning id`,
         [first, last, signature]
     );
 };
