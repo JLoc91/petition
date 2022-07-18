@@ -38,12 +38,11 @@ app.use(express.static("./public"));
 app.use(express.static("./images"));
 
 app.get("/", (req, res) => {
-    // res.statusCode(301);
     res.redirect("/petition");
 });
 
 app.get("/petition", (req, res) => {
-    if (req.cookies.signed) {
+    if (req.cookies.session) {
         console.log("already signed petition");
         res.redirect("/thanks");
     } else {
@@ -64,7 +63,7 @@ app.post("/petition", (req, res) => {
                 req.session.signatureId.rows
             );
             console.log("yay it worked");
-            res.cookie("signed", true);
+            // res.cookie("signed", true);
             res.redirect("/thanks");
         })
         .catch((err) => console.log("err in addSigner: ", err));
@@ -80,7 +79,7 @@ app.get("/thanks", (req, res) => {
             db.getNumSigners()
                 .then((result) => {
                     // console.log("result.rows[0].count: ", result.rows[0].count);
-                    if (req.cookies.signed) {
+                    if (req.cookies.session) {
                         console.log("Succesfully signed!");
                         const numSigners = result.rows[0].count;
                         res.render("thanks", {
@@ -101,7 +100,7 @@ app.get("/thanks", (req, res) => {
 
 app.get("/signers", (req, res) => {
     db.getSigners().then((result) => {
-        if (req.cookies.signed) {
+        if (req.cookies.session) {
             console.log("Succesfully signed!");
             // console.log("result.rows.length: ", result.rows.length);
             // console.log("result.rows: ", result.rows);
