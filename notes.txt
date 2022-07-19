@@ -1,0 +1,42 @@
+templates: register, login; --> change petition template --> only ask for signature, not first and last anymore
+post /petition --> only ask for signature --> store only userID and signature in signatures db
+
+A. Database
+
+    New table: users  --> DONE!
+    Change table: signatures. Remove fields, add a new field: user_id. --> DONE!
+
+B. Routes
+
+    New: GET /register
+    New: POST /register
+    New: GET /login
+    New: POST /login
+    New: POST /logout
+    Change: POST /petition: handle new data structure
+
+C. Templates
+
+    New: register.handlebars --> DONE!
+    New: login.handlebars --> DONE!
+
+D. db.js
+
+    New: hashPassword(password) (don't need to export this) --> DONE!
+    New: insertUser(first, last, email, password)
+        hashes the password (calls other function)
+        inserts into the users table: first name, last name, email, and hashed password
+        returns...? the created row
+    New: authenticate(email, password)
+        Checks if we can find a user with this email
+            If not, throws an error
+        Checks if password matches (use bcrypt)
+            If not, throws an error
+        Returns the found user row
+
+E. auth-test.js
+
+    A script to test your createUser and authenticateUser functions!
+    Try both functions with good and bad data.
+    Log your results.
+    This will help you ensure that your logic is correct.

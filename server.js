@@ -42,6 +42,67 @@ app.get("/", (req, res) => {
     res.redirect("/petition");
 });
 
+app.get("/register", (req, res) => {
+    // if (req.cookies.session) {
+    //     console.log("already signed petition");
+    //     res.redirect("/thanks");
+    // } else {
+    //     console.log("get req to / route just happened!");
+    //     res.render("home", {
+    //         layouts: "main",
+    //     });
+    // }
+    console.log("get req to '/register' route just happened!");
+    res.render("register", {
+        layouts: "main",
+    });
+});
+
+app.post("/register", (req, res) => {
+    db.insertUser(
+        req.body.first,
+        req.body.last,
+        req.body.email,
+        req.body.password
+    )
+        .then((id) => {
+            req.session.signatureId = id;
+            console.log(
+                "req.session.signatureId: ",
+                req.session.signatureId.rows
+            );
+            console.log("yay it worked");
+            res.redirect("/petition");
+        })
+        .catch((err) => console.log("err in insertUser: ", err));
+});
+
+app.get("/login", (req, res) => {
+    console.log("get req to '/login' route just happened!");
+    res.render("login", {
+        layouts: "main",
+    });
+});
+
+app.post("/login", (req, res) => {
+    db.authenticate(req.body.email, req.body.password)
+        .then((result) => {
+            // if (authentication) {
+            req.session.id = result.rows[0].id;
+            console.log("result: ", result);
+            // req.session.Id = result.rows[0].id;
+            console.log("yay it worked");
+            res.redirect("/petition");
+            // } else {
+            console.log("not authenticated correctly");
+            res.redirect("/login");
+            // }
+            // req.session.Id = id;
+            // console.log("req.session.signatureId: ", req.session.Id.rows);
+        })
+        .catch((err) => console.log("err in authenticate: ", err));
+});
+
 app.get("/petition", (req, res) => {
     if (req.cookies.session) {
         console.log("already signed petition");
@@ -56,14 +117,16 @@ app.get("/petition", (req, res) => {
 
 app.post("/petition", (req, res) => {
     // console.log("req.body: ", req.body);
-    db.addSigner(req.body.first, req.body.last, req.body.signature)
-        .then((id) => {
-            req.session.signatureId = id;
+    db.addSigner(req.session.id, req.body.signature)
+        .then(() => {
+            // req.session.signatureId = id;
+            // console.log(
+            //     "req.session.signatureId: ",
+            //     req.session.signatureId.rows
+            // );
             console.log(
-                "req.session.signatureId: ",
-                req.session.signatureId.rows
+                "yay the signature was inserted into the signatures database"
             );
-            console.log("yay it worked");
             // res.cookie("signed", true);
             res.redirect("/thanks");
         })
