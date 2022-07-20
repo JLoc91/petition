@@ -63,16 +63,16 @@ function writeSignature(e) {
                 e.originalEvent.touches[0].pageY - canvas.offset().top;
             ctx.lineTo(drawX, drawY);
             ctx.stroke();
-            console.log(
-                "e.originalEvent.touches[0].pageX: ",
-                e.originalEvent.touches[0].pageX
-            );
+            // console.log(
+            //     "e.originalEvent.touches[0].pageX: ",
+            //     e.originalEvent.touches[0].pageX
+            // );
         } else {
             const drawX = e.pageX - canvas.offset().left;
             const drawY = e.pageY - canvas.offset().top;
             ctx.lineTo(drawX, drawY);
             ctx.stroke();
-            console.log("e.pageX: ", e.pageX);
+            // console.log("e.pageX: ", e.pageX);
         }
     }
 }
