@@ -81,7 +81,7 @@ module.exports.insertUser = (first, last, email, password) => {
 // -an error if anything goes wrong
 // (no email found OR wrong password)
 // module.exports.authenticate = (email, password) => {
-module.exports.authenticate = (email) => {
+module.exports.authenticate = (email, password) => {
     //1. Look for a user with the given email
     //2. If not found, throw an error!
     //3. Compare the given password with the hased password of the found user.
@@ -92,14 +92,22 @@ module.exports.authenticate = (email) => {
 
     return findUser(email)
         .then((result) => {
-            console.log("result in findUser: ", result);
-            return result;
-            // bcrypt.compare(password, result.rows[0].password);
+            console.log("result.rows in findUser: ", result.rows[0].password);
+            console.log("password in findUser: ", password);
+            console.log("result.rows[0].id in findUser: ", result.rows[0].id);
+            let userid = result.rows[0].id;
+            const passwordCheck = bcrypt.compare(
+                password,
+                result.rows[0].password
+            );
+            console.log("passwordCheck: ", passwordCheck);
+            return passwordCheck, userid;
         })
         .catch((err) => console.log("error in findUser: ", err));
 };
 
 function findUser(email) {
+    console.log("email in findUser: ", email);
     return db.query(`select * from ${tableUser}
     where "email" = '${email}'`);
 }

@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS profiles;
 CREATE TABLE signatures (
      id serial primary key,
      user_id integer not null unique references users(id),
-     signature VARCHAR NOT NULL CHECK (signature != '')
+     signature VARCHAR NOT NULL CHECK (signature != ''),
      timestamp timestamp default current_timestamp
 );
 

@@ -67,7 +67,7 @@ app.post("/register", (req, res) => {
     )
         .then((result) => {
             req.session.userid = result.rows[0].id;
-            console.log("req.session.userid: ", req.session.userid);
+            // console.log("req.session.userid: ", req.session.userid);
             console.log("yay it worked");
             res.redirect("/petition");
         })
@@ -86,16 +86,22 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
     db.authenticate(req.body.email, req.body.password)
-        .then((result) => {
+        .then((result, id) => {
             // if (authentication) {
-            req.session.userid = result.rows[0].id;
             console.log("result: ", result);
+
+            // console.log("result: ", result);
             // req.session.Id = result.rows[0].id;
-            console.log("yay it worked");
-            res.redirect("/petition");
-            // } else {
-            console.log("not authenticated correctly");
-            res.redirect("/login");
+            if (result) {
+                req.session.userid = id;
+                console.log("yay it worked");
+                res.redirect("/petition");
+                // } else {
+            } else {
+                console.log("not authenticated correctly");
+                res.redirect("/login");
+            }
+
             // }
             // req.session.Id = id;
             // console.log("req.session.signatureId: ", req.session.Id.rows);
@@ -104,13 +110,13 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/petition", (req, res) => {
-    // console.log(
-    //     "db.checkSignatureCookie(req.session.userid): ",
-    //     db.checkSignatureCookie(req.session.userid)
-    // );
+    console.log(
+        "db.checkSignatureCookie(req.session.userid): ",
+        db.checkSignatureCookie(req.session.userid)
+    );
     db.checkSignatureCookie(req.session.userid)
         .then((result) => {
-            console.log("result.rows: ", result.rows);
+            // console.log("result.rows: ", result.rows);
             if (result.rows[0] != undefined) {
                 console.log("result.rows ist nicht leer!!!!!");
                 req.session.signatureid = result.rows[0].id;
@@ -133,13 +139,13 @@ app.get("/petition", (req, res) => {
 
 app.post("/petition", (req, res) => {
     // console.log("req.body: ", req.body);
-    console.log("req.session.userid: ", req.session.userid);
+    // console.log("req.session.userid: ", req.session.userid);
     // console.log("req.body.signature: ", req.body.signature);
     db.addSigner(req.session.userid, req.body.signature)
         .then((result) => {
             req.session.signatureid = result.rows[0].id;
             // req.session.signatureid = id;
-            console.log("req.session.signatureid: ", req.session.signatureid);
+            // console.log("req.session.signatureid: ", req.session.signatureid);
             console.log(
                 "yay the signature was inserted into the signatures database and the signatureid cookie was set"
             );
@@ -219,7 +225,7 @@ app.get("/signers/:city", (req, res) => {
 app.get("/logout", (req, res) => {
     console.log("user logged out");
     req.session = undefined;
-    res.redirect("/login");
+    res.redirect("/register");
 });
 
 app.listen(PORT, () => console.log("petition server is listening..."));
