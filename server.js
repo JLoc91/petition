@@ -1,4 +1,5 @@
 const express = require("express");
+const bcrypt = require("bcryptjs");
 const cookieSession = require("cookie-session");
 const cookieParser = require("cookie-parser");
 const app = express();
@@ -76,7 +77,7 @@ app.post("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
     if (req.session.userid) {
-        redirect("/petition");
+        res.redirect("/petition");
     }
     console.log("get req to '/login' route just happened!");
     res.render("login", {
@@ -86,14 +87,11 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
     db.authenticate(req.body.email, req.body.password)
-        .then((result, id) => {
+        .then((resultObj) => {
             // if (authentication) {
-            console.log("result: ", result);
-
-            // console.log("result: ", result);
-            // req.session.Id = result.rows[0].id;
-            if (result) {
-                req.session.userid = id;
+            console.log("resultObj: ", resultObj);
+            if (resultObj.passwordCheck) {
+                req.session.userid = resultObj.userid;
                 console.log("yay it worked");
                 res.redirect("/petition");
                 // } else {
@@ -101,15 +99,27 @@ app.post("/login", (req, res) => {
                 console.log("not authenticated correctly");
                 res.redirect("/login");
             }
+            // return passwordCheck;
+            // console.log("resultArr[0]: ", resultArr[0]);
+            // console.log("resultArr[1]: ", resultArr[1]);
+            // const passwordCheck = resultArr[0];
+            // const id = resultArr[1];
+
+            // console.log("result: ", result);
+            // req.session.Id = result.rows[0].id;
 
             // }
             // req.session.Id = id;
             // console.log("req.session.signatureId: ", req.session.Id.rows);
         })
-        .catch((err) => console.log("err in authenticate: ", err));
+        .catch((err) => {
+            console.log("err in authenticate: ", err);
+            res.redirect("/login");
+        });
 });
 
 app.get("/petition", (req, res) => {
+    console.log("req.session.userid: ", req.session.userid);
     console.log(
         "db.checkSignatureCookie(req.session.userid): ",
         db.checkSignatureCookie(req.session.userid)
@@ -208,6 +218,8 @@ app.get("/profile", (req, res) => {
 });
 
 app.post("/profile", (req, res) => {
+    console.log("req.body: ", req.body);
+    db.cleanProfileData(req.body);
     //1. retrieve the information (req.body)
     //2. sanitize your data
     //      - only allow https urls (check the url starts with http)

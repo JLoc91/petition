@@ -96,12 +96,20 @@ module.exports.authenticate = (email, password) => {
             console.log("password in findUser: ", password);
             console.log("result.rows[0].id in findUser: ", result.rows[0].id);
             let userid = result.rows[0].id;
-            const passwordCheck = bcrypt.compare(
-                password,
-                result.rows[0].password
-            );
-            console.log("passwordCheck: ", passwordCheck);
-            return passwordCheck, userid;
+            const resultObj = {
+                enteredPassword: password,
+                dbPassword: result.rows[0].password,
+                userid: result.rows[0].id,
+            };
+
+            return comparePassword(password, result.rows[0].password)
+                .then((passwordCheck) => {
+                    console.log("passwordCheck: ", passwordCheck);
+                    resultObj.passwordCheck = passwordCheck;
+                    console.log("resultObj in comparePassword: ", resultObj);
+                    return resultObj;
+                })
+                .catch((err) => console.log("err in comparePassword: ", err));
         })
         .catch((err) => console.log("error in findUser: ", err));
 };
@@ -111,3 +119,27 @@ function findUser(email) {
     return db.query(`select * from ${tableUser}
     where "email" = '${email}'`);
 }
+
+function comparePassword(password, dbPassword) {
+    return bcrypt.compare(password, dbPassword);
+}
+
+module.exports.cleanProfileData = (input) => {
+    if (input.url.includes("http://" || "https://", 0)) {
+        console.log("input.url before: ", input.url);
+        input.url = null;
+        console.log("input.url after: ", input.url);
+    }
+    if (typeof input.age != "number") {
+        console.log("typeof input.age: ", typeof input.age);
+        console.log("input.age before: ", input.age);
+        input.age = null;
+        console.log("input.age after: ", input.age);
+    }
+    if (!input.city[0] === input.city[0].toUppercase) {
+        console.log("input.city before: ", input.city);
+
+        console.log("input.city after: ", input.city);
+    }
+    console.log("input after: ", input);
+};
