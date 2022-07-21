@@ -4,19 +4,32 @@ const password = "postgres";
 const database = "petition";
 const tableSignature = "signatures";
 const tableUser = "users";
+const tableProfiles = "profiles";
 const bcrypt = require("bcryptjs");
+const { profile } = require("console");
 // const db = spicedPg(`postgres:${user}:${password}@localhost:5432/${database}`);
 const db = spicedPg(`postgres:${user}:${password}@localhost:5432/${database}`);
 
-module.exports.getSigners = () => {
-    return db.query(
-        `select first, last from ${tableUser}
-        join ${tableSignature}
-        on ${tableUser}.id = ${tableSignature}.user_id;
-        `
-    );
-    //--join on profiles
-    //--join on signatures
+module.exports.getSigners = (city) => {
+    console.log("city: ", city);
+    if (city != undefined) {
+        return db.query(
+            `select first, last, age, city, url from ${tableUser}
+            join ${tableSignature}
+            on ${tableUser}.id = ${tableSignature}.user_id
+            left outer join ${tableProfiles}
+            on ${tableUser}.id = ${tableProfiles}.user_id
+            where ${tableProfiles}.city = '${city}'`
+        );
+    } else {
+        return db.query(
+            `select first, last, age, city, url from ${tableUser}
+            join ${tableSignature}
+            on ${tableUser}.id = ${tableSignature}.user_id
+            left outer join ${tableProfiles}
+            on ${tableUser}.id = ${tableProfiles}.user_id;`
+        );
+    }
 };
 
 module.exports.getSignature = (user_id) => {
@@ -52,7 +65,7 @@ function hashPassword(password) {
         .genSalt()
         .then((salt) => {
             const hash = bcrypt.hash(password, salt);
-            // console.log("hash in function: ", hash);
+            console.log("hash in function: ", hash);
             return hash;
         })
         .catch((err) => console.log("error in hashPassword function: ", err));
@@ -124,22 +137,176 @@ function comparePassword(password, dbPassword) {
     return bcrypt.compare(password, dbPassword);
 }
 
-module.exports.cleanProfileData = (input) => {
-    if (input.url.includes("http://" || "https://", 0)) {
-        console.log("input.url before: ", input.url);
-        input.url = null;
-        console.log("input.url after: ", input.url);
-    }
-    if (typeof input.age != "number") {
-        console.log("typeof input.age: ", typeof input.age);
-        console.log("input.age before: ", input.age);
-        input.age = null;
-        console.log("input.age after: ", input.age);
-    }
-    if (!input.city[0] === input.city[0].toUppercase) {
-        console.log("input.city before: ", input.city);
+module.exports.insertProfile = (input, cookie) => {
+    const cleanInput = cleanProfileData(input);
 
-        console.log("input.city after: ", input.city);
-    }
-    console.log("input after: ", input);
+    return db.query(
+        `INSERT INTO ${tableProfiles}(city, age, url, user_id)
+        VALUES ($1, $2, $3, $4) returning id`,
+        [cleanInput.city, cleanInput.age, cleanInput.url, cookie.userid]
+    );
 };
+
+// module.exports.insertProfile = (city, age, url) => {
+//     //1. Hash the user's password [PROMISE]
+//     //2. Insert into the database with a query
+//     //3. Return the entire row --> not necessary???
+//     // so that we can store the user's id in the session!
+//     return hashPassword(password)
+//         .then((hash) => {
+//             // console.log("hash: ", hash);
+//             return db.query(
+//                 `INSERT INTO ${tableUser}(first, last, email, password)
+//         VALUES ($1, $2, $3, $4) returning id`,
+//                 [first, last, email, hash]
+//             );
+//         })
+//         .catch((err) => console.log("err in hashPassword: ", err));
+// };
+
+function capitalizeCity(city) {
+    let eachWord = city.toLowerCase().split(" ");
+    for (let i = 0; i < eachWord.length; i++) {
+        eachWord[i] =
+            eachWord[i].charAt(0).toUpperCase() + eachWord[i].substring(1);
+    }
+    let fullCity = eachWord.join(" ");
+    console.log("fullCity: ", fullCity);
+    return fullCity;
+}
+
+function cleanProfileData(input) {
+    if (input.url === "") {
+        input.url = null;
+    } else if (
+        !input.url.includes("http://", 0) &&
+        !input.url.includes("https://", 0)
+    ) {
+        input.url = "http://" + input.url;
+    }
+
+    console.log("input.age: ", input.age);
+    if (input.age === "") {
+        console.log("input.age drinnen: ", input.age);
+        input.age = null;
+    }
+    // if (typeof input.age != "number") {
+    //     console.log("typeof input.age: ", typeof input.age);
+    //     console.log("input.age before: ", input.age);
+    //     input.age = null;
+    //     console.log("input.age after: ", input.age);
+    // }
+    input.city = capitalizeCity(input.city);
+    console.log("input after: ", input);
+    return input;
+}
+
+module.exports.getProfileData = (userid) => {
+    return db.query(
+        `select first, last, email, age, city, url from ${tableUser}
+            join ${tableSignature}
+            on ${tableUser}.id = ${tableSignature}.user_id
+            left outer join ${tableProfiles}
+            on ${tableUser}.id = ${tableProfiles}.user_id
+            where ${tableUser}.id = '${userid}';`
+    );
+};
+
+module.exports.updateUserWithoutPassword = (profileData) => {
+    console.log("profileData: ", profileData);
+    return db.query(
+        `update users set first=$2, last=$3, email=$4
+        WHERE id=$1`,
+        [profileData.id, profileData.first, profileData.last, profileData.email]
+    );
+};
+
+module.exports.updateUserWithPassword = (profileData) => {
+    console.log("profileData: ", profileData);
+    return hashPassword(profileData.password)
+        .then((hash) => {
+            profileData.password = hash;
+            return db.query(
+                `update users set first=$2, last=$3, email=$4, password=$5
+                WHERE id=$1`,
+                [
+                    profileData.id,
+                    profileData.first,
+                    profileData.last,
+                    profileData.email,
+                    profileData.password,
+                ]
+            );
+        })
+        .catch((err) => console.log("err in hashPassword: ", err));
+};
+
+module.exports.upsertProfile = (profileData) => {
+    cleanProfileData(profileData);
+    console.log("profileData: ", profileData);
+    return db.query(
+        `INSERT INTO profiles (user_id, city, age, url)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT (user_id)
+    DO UPDATE SET city=$2, age=$3, url=$4
+    WHERE profiles.user_id=$1`,
+        [profileData.id, profileData.city, profileData.age, profileData.url]
+    );
+};
+
+module.exports.deleteSignature = (userid) => {
+    console.log("userid: ", userid);
+    return db.query(`DELETE FROM signatures WHERE user_id= $1`, [userid]);
+};
+
+module.exports.deleteProfile = (userid) => {
+    console.log("userid: ", userid);
+    return db.query(`DELETE FROM profiles WHERE user_id= $1`, [userid]);
+};
+
+module.exports.deleteUser = (userid) => {
+    console.log("userid: ", userid);
+    return db.query(`DELETE FROM users WHERE id= $1`, [userid]);
+};
+
+module.exports.deleteAccount = (userid) => {
+    console.log("userid: ", userid);
+
+    return this.deleteSignature(userid)
+        .then(() => {
+            return this.deleteProfile(userid)
+                .then(() => {
+                    return this.deleteUser(userid)
+                        .then(() => {})
+                        .catch((err) =>
+                            console.log("err in deleteUser: ", err)
+                        );
+                })
+                .catch((err) => console.log("err in deleteProfile: ", err));
+        })
+        .catch((err) => console.log("err in deleteSignature: ", err));
+
+    // return db.query(
+    //     `
+    // DELETE FROM signatures WHERE user_id= $1;
+    // DELETE FROM profiles WHERE user_id= $1;
+    // DELETE FROM users WHERE id= $1
+    // `,
+    //     `,
+    //     [userid]
+    // );
+};
+
+// `INSERT INTO ${tableUser}(first, last, email, password)
+//         VALUES ($1, $2, $3, $4) returning id`,
+//     [first, last, email, hash];
+
+// für andere funktion nützlich:
+// return db.query(
+//     `INSERT INTO users (first, last, email)
+//     VALUES ($2, $3, $4)
+//     ON CONFLICT (email)
+//     DO UPDATE SET first=$2, last=$3
+//     WHERE users.id=$1`,
+//     [profileData.id, profileData.first, profileData.last, profileData.email]
+// );

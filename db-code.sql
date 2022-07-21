@@ -27,3 +27,9 @@ CREATE TABLE profiles (
      age integer,
      user_id integer not null unique references users(id)
 );
+
+        select first, last, age, city, url from users
+        join signatures
+        on users.id = signatures.user_id
+        join profiles
+        on users.id = profiles.user_id;

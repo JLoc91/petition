@@ -1,0 +1,29 @@
+<main>
+    <h1>Account details</h1>
+    <h2>Here you can change your account details</h2>
+    <form method="post">
+         <input type="text" name="first" value="{{profileData.[0].first}}"/>
+        <p>First Name</p>
+        <input type="text" name="last" value="{{profileData.[0].last}}"/>
+        <p>Last Name</p>
+        <input type="text" name="email" value="{{profileData.[0].email}}"/>
+        <p>Email Adress</p>
+        <input type="text" name="password" />
+        <p>Password</p>
+        <input type="text" name="city" value="{{profileData.[0].city}}"/>
+        <p>City</p>
+        <input type="number" name="age" value="{{profileData.[0].age}}"/>
+        <p>Age</p>
+        <input type="text" name="url" value="{{profileData.[0].url}}"/>
+        <p>URL</p>
+        <button id="submit">SAVE</button>
+    </form>
+</main>
+<button><a href="/petition">GO BACK TO PETITION</a></button>
+{{>logoutButton}}
+<footer>Copyright Julien 2022</footer>
+<script
+    src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+    crossorigin="anonymous"
+></script>
