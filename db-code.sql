@@ -33,3 +33,11 @@ CREATE TABLE profiles (
         on users.id = signatures.user_id
         join profiles
         on users.id = profiles.user_id;
+
+
+
+INSERT INTO users (first, last, email)
+        VALUES ('lass', 'mal', 'machen')
+        ON CONFLICT (id)
+        DO UPDATE SET first='lass', last='mal'
+        WHERE users.id=64

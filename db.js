@@ -1,14 +1,15 @@
+const { user, password, database } = require("./secrets.json");
+
 const spicedPg = require("spiced-pg");
-const user = "jloco";
-const password = "postgres";
-const database = "petition";
 const tableSignature = "signatures";
 const tableUser = "users";
 const tableProfiles = "profiles";
 const bcrypt = require("bcryptjs");
 const { profile } = require("console");
 // const db = spicedPg(`postgres:${user}:${password}@localhost:5432/${database}`);
-const db = spicedPg(`postgres:${user}:${password}@localhost:5432/${database}`);
+const db =
+    // spicedPg(`process.env.DATABASE_URL`) ||
+    spicedPg(`postgres:${user}:${password}@localhost:5432/${database}`);
 
 module.exports.getSigners = (city) => {
     console.log("city: ", city);
@@ -39,6 +40,7 @@ module.exports.getSignature = (user_id) => {
 };
 
 module.exports.checkSignatureCookie = (user_id) => {
+    console.log("user_id in checkSignatureCookie: ", user_id);
     return db.query(`select id from ${tableSignature}
                     where user_id = ${user_id}`);
 };

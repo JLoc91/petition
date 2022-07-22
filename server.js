@@ -16,7 +16,7 @@ app.use(
 // Use middleware to help us read req.body, for submitted forms!
 app.use(express.urlencoded({ extended: false }));
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 const contentTypes = {
     ".html": "text/html",
     ".css": "text/css",
@@ -44,19 +44,15 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-    // if (req.cookies.session) {
-    //     console.log("already signed petition");
-    //     res.redirect("/thanks");
-    // } else {
-    //     console.log("get req to / route just happened!");
-    //     res.render("home", {
-    //         layouts: "main",
-    //     });
-    // }
-    console.log("get req to '/register' route just happened!");
-    res.render("register", {
-        layouts: "main",
-    });
+    if (req.session.userid) {
+        console.log("already registered");
+        res.redirect("/petition");
+    } else {
+        console.log("get req to '/register' route just happened!");
+        res.render("register", {
+            layouts: "main",
+        });
+    }
 });
 
 app.post("/register", (req, res) => {
@@ -123,32 +119,40 @@ app.post("/login", (req, res) => {
 });
 
 app.get("/petition", (req, res) => {
-    console.log("req.session.userid: ", req.session.userid);
-    console.log(
-        "db.checkSignatureCookie(req.session.userid): ",
-        db.checkSignatureCookie(req.session.userid)
-    );
-    db.checkSignatureCookie(req.session.userid)
-        .then((result) => {
-            // console.log("result.rows: ", result.rows);
-            if (result.rows[0] != undefined) {
-                console.log("result.rows ist nicht leer!!!!!");
-                req.session.signatureid = result.rows[0].id;
-            }
-            if (req.session.userid && req.session.signatureid) {
-                res.redirect("/thanks");
-            }
-            if (req.session.userid) {
-                console.log("logged in");
-                res.render("home", {
-                    layouts: "main",
-                });
-            } else {
-                console.log("user not logged in");
-                res.redirect("/register");
-            }
-        })
-        .catch((err) => console.log("err in checkSignatureCookie: ", err));
+    console.log("req.session.userid in /petition: ", req.session.userid);
+    // console.log(
+    //     "db.checkSignatureCookie(req.session.userid): ",
+    //     db.checkSignatureCookie(req.session.userid)
+    // );
+    if (req.session.userid) {
+        console.log("logged in");
+        if (req.session.signatureid) {
+            res.redirect("/thanks");
+        } else {
+            db.checkSignatureCookie(req.session.userid)
+                .then((result) => {
+                    console.log("result.rows: ", result.rows);
+                    console.log("result.rows[0]: ", result.rows[0]);
+                    if (result.rows[0] != undefined) {
+                        console.log("result.rows ist nicht leer!!!!!");
+                        console.log("Already signed");
+                        req.session.signatureid = result.rows[0].id;
+                        res.redirect("/thanks");
+                    } else {
+                        console.log("Not signed yet");
+                        res.render("home", {
+                            layouts: "main",
+                        });
+                    }
+                })
+                .catch((err) =>
+                    console.log("err in checkSignatureCookie: ", err)
+                );
+        }
+    } else {
+        console.log("user not logged in");
+        res.redirect("/register");
+    }
 });
 
 app.post("/petition", (req, res) => {
@@ -172,13 +176,15 @@ app.post("/petition", (req, res) => {
 // and show them how many people have already signed and a link to those people
 app.get("/thanks", (req, res) => {
     console.log("get req to '/thanks' route just happened!");
+    console.log("req.session.userid in /thanks: ", req.session.userid);
+
     if (req.session.signatureid && req.session.userid) {
         console.log("Succesfully signed!");
         console.log("req.session.userid: ", req.session.userid);
         console.log("req.session.signatureid: ", req.session.signatureid);
         db.getSignature(req.session.userid)
             .then((result) => {
-                // console.log("getSignature result: ", result);
+                console.log("getSignature result: ", result);
                 const signature = result.rows[0].signature;
                 db.getNumSigners()
                     .then((result) => {
@@ -222,7 +228,7 @@ app.get("/signers", (req, res) => {
 app.get("/profile", (req, res) => {
     if (req.session.profile) {
         console.log("already set or skipped profile");
-        res.redirect("/petition");
+        res.redirect("/profile/edit");
     } else {
         res.render("profiles");
     }
@@ -344,11 +350,18 @@ app.post("/petition/delete", (req, res) => {
     // );
     // if (permission) {
     console.log("req.session.userid: ", req.session.userid);
-    db.deleteSignature(req.session.userid);
-    console.log("Signature deleted");
-    req.session.signatureid = undefined;
-    // }
-    res.redirect("/petition");
+    db.deleteSignature(req.session.userid)
+        .then(() => {
+            console.log("Signature deleted");
+            req.session.signatureid = undefined;
+            console.log(
+                "req.session.signatureid after deleting signature: ",
+                req.session.signatureid
+            );
+            // }
+            res.redirect("/petition");
+        })
+        .catch((err) => console.log("err in deleteSignature: ", err));
 });
 
 app.post("/petition/delete-account", (req, res) => {
@@ -358,11 +371,14 @@ app.post("/petition/delete-account", (req, res) => {
     //     )
     // ) {
     console.log("req.session.userid: ", req.session.userid);
-    db.deleteAccount(req.session.userid);
-    console.log(`Account of user ${req.session.userid} deleted`);
-    req.session = undefined;
-    // }
-    res.redirect("/register");
+    db.deleteAccount(req.session.userid)
+        .then(() => {
+            console.log(`Account of user ${req.session.userid} deleted`);
+            req.session = undefined;
+            // }
+            res.redirect("/register");
+        })
+        .catch((err) => console.log("err in deleteAccount: ", err));
 });
 
 app.listen(PORT, () => console.log("petition server is listening..."));
