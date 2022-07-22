@@ -371,7 +371,7 @@ app.post("/petition/delete", (req, res) => {
     //     "Do you really want to delete your signature and withdraw from the petition?"
     // );
     // if (permission) {
-    if (!reqs.session.signatureid) {
+    if (!req.session.signatureid) {
         res.redirect("/petition");
     } else {
         console.log("req.session.userid: ", req.session.userid);
