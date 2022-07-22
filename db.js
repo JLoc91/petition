@@ -1,5 +1,3 @@
-const { user, password, database } = require("./secrets.json");
-
 const spicedPg = require("spiced-pg");
 const tableSignature = "signatures";
 const tableUser = "users";
@@ -7,9 +5,16 @@ const tableProfiles = "profiles";
 const bcrypt = require("bcryptjs");
 const { profile } = require("console");
 // const db = spicedPg(`postgres:${user}:${password}@localhost:5432/${database}`);
-const db =
-    // spicedPg(`process.env.DATABASE_URL`) ||
-    spicedPg(`postgres:${user}:${password}@localhost:5432/${database}`);
+let dbURL;
+
+if (process.env.NODE_ENV === "production") {
+    dbURL = process.env.DATABASE_URL;
+} else {
+    const { user, password, database } = require("./secrets.json");
+    dbURL = `postgres:${user}:${password}@localhost:5432/${database}`;
+}
+
+const db = spicedPg(dbURL);
 
 module.exports.getSigners = (city) => {
     console.log("city: ", city);

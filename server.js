@@ -5,9 +5,11 @@ const cookieParser = require("cookie-parser");
 const app = express();
 const db = require("./db");
 const hb = require("express-handlebars");
+const COOKIE_SECRET =
+    process.env.COOKIE_SECRET || require("./secrets.json").COOKIE_SECRET;
 app.use(
     cookieSession({
-        secret: `Dumm ist der, der dummes tut.`,
+        secret: COOKIE_SECRET,
         maxAge: 1000 * 60 * 60 * 24 * 14,
         sameSite: true,
     })
