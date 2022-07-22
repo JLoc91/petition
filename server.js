@@ -58,23 +58,27 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-    if (req.body.password === "") {
-        console.log("!!!Password can't be empty!!!");
-        return res.redirect("/register");
+    if (req.session.userid) {
+        res.redirect("/petition");
+    } else {
+        if (req.body.password === "") {
+            console.log("!!!Password can't be empty!!!");
+            return res.redirect("/register");
+        }
+        db.insertUser(
+            req.body.first,
+            req.body.last,
+            req.body.email,
+            req.body.password
+        )
+            .then((result) => {
+                req.session.userid = result.rows[0].id;
+                // console.log("req.session.userid: ", req.session.userid);
+                console.log("yay it worked");
+                res.redirect("/profile");
+            })
+            .catch((err) => console.log("err in insertUser: ", err));
     }
-    db.insertUser(
-        req.body.first,
-        req.body.last,
-        req.body.email,
-        req.body.password
-    )
-        .then((result) => {
-            req.session.userid = result.rows[0].id;
-            // console.log("req.session.userid: ", req.session.userid);
-            console.log("yay it worked");
-            res.redirect("/profile");
-        })
-        .catch((err) => console.log("err in insertUser: ", err));
 });
 
 app.get("/login", (req, res) => {
@@ -88,36 +92,40 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
-    db.authenticate(req.body.email, req.body.password)
-        .then((resultObj) => {
-            // if (authentication) {
-            console.log("resultObj: ", resultObj);
-            if (resultObj.passwordCheck) {
-                req.session.userid = resultObj.userid;
-                console.log("yay it worked");
-                res.redirect("/petition");
-                // } else {
-            } else {
-                console.log("not authenticated correctly");
+    if (req.session.userid) {
+        res.redirect("/petition");
+    } else {
+        db.authenticate(req.body.email, req.body.password)
+            .then((resultObj) => {
+                // if (authentication) {
+                console.log("resultObj: ", resultObj);
+                if (resultObj.passwordCheck) {
+                    req.session.userid = resultObj.userid;
+                    console.log("yay it worked");
+                    res.redirect("/petition");
+                    // } else {
+                } else {
+                    console.log("not authenticated correctly");
+                    res.redirect("/login");
+                }
+                // return passwordCheck;
+                // console.log("resultArr[0]: ", resultArr[0]);
+                // console.log("resultArr[1]: ", resultArr[1]);
+                // const passwordCheck = resultArr[0];
+                // const id = resultArr[1];
+
+                // console.log("result: ", result);
+                // req.session.Id = result.rows[0].id;
+
+                // }
+                // req.session.Id = id;
+                // console.log("req.session.signatureId: ", req.session.Id.rows);
+            })
+            .catch((err) => {
+                console.log("err in authenticate: ", err);
                 res.redirect("/login");
-            }
-            // return passwordCheck;
-            // console.log("resultArr[0]: ", resultArr[0]);
-            // console.log("resultArr[1]: ", resultArr[1]);
-            // const passwordCheck = resultArr[0];
-            // const id = resultArr[1];
-
-            // console.log("result: ", result);
-            // req.session.Id = result.rows[0].id;
-
-            // }
-            // req.session.Id = id;
-            // console.log("req.session.signatureId: ", req.session.Id.rows);
-        })
-        .catch((err) => {
-            console.log("err in authenticate: ", err);
-            res.redirect("/login");
-        });
+            });
+    }
 });
 
 app.get("/petition", (req, res) => {
@@ -161,17 +169,21 @@ app.post("/petition", (req, res) => {
     // console.log("req.body: ", req.body);
     // console.log("req.session.userid: ", req.session.userid);
     // console.log("req.body.signature: ", req.body.signature);
-    db.addSigner(req.session.userid, req.body.signature)
-        .then((result) => {
-            req.session.signatureid = result.rows[0].id;
-            // req.session.signatureid = id;
-            // console.log("req.session.signatureid: ", req.session.signatureid);
-            console.log(
-                "yay the signature was inserted into the signatures database and the signatureid cookie was set"
-            );
-            res.redirect("/thanks");
-        })
-        .catch((err) => console.log("err in addSigner: ", err));
+    if (req.session.signatureid) {
+        res.redirect("/thanks");
+    } else {
+        db.addSigner(req.session.userid, req.body.signature)
+            .then((result) => {
+                req.session.signatureid = result.rows[0].id;
+                // req.session.signatureid = id;
+                // console.log("req.session.signatureid: ", req.session.signatureid);
+                console.log(
+                    "yay the signature was inserted into the signatures database and the signatureid cookie was set"
+                );
+                res.redirect("/thanks");
+            })
+            .catch((err) => console.log("err in addSigner: ", err));
+    }
 });
 
 // request to render the "thanks" page to thank the signers after signing
@@ -237,13 +249,17 @@ app.get("/profile", (req, res) => {
 });
 
 app.post("/profile", (req, res) => {
-    console.log("req.body: ", req.body);
-    db.insertProfile(req.body, req.session)
-        .then(() => {
-            req.session.profile = true;
-            res.redirect("/petition");
-        })
-        .catch((err) => console.log("err in insertProfile:", err));
+    if (!req.session.userid) {
+        res.redirect("/petition");
+    } else {
+        console.log("req.body: ", req.body);
+        db.insertProfile(req.body, req.session)
+            .then(() => {
+                req.session.profile = true;
+                res.redirect("/petition");
+            })
+            .catch((err) => console.log("err in insertProfile:", err));
+    }
     //1. retrieve the information (req.body)
     //2. sanitize your data
     //      - only allow https urls (check the url starts with http)
@@ -266,40 +282,44 @@ app.get("/profile/edit", (req, res) => {
 });
 
 app.post("/profile/edit", (req, res) => {
-    // 1. Update the users table
-    // a. with password
-    // db.updateUserWithPassword
-    // Make sure you hash the password first.
-    // b. without password
-    // db.updateUserWithoutPassword
-    // 2. Update the profiles table
-    // a. we already have profile info
-    // b. no profile info yet
-    // ➡️ Use an UPSERT query
-
-    let userUpdatePromise;
-
-    // If you feel adventorous, try to do this with Promise.all()
-    // })
-    console.log("req.body: ", req.body);
-    req.body.id = req.session.userid;
-    const password = req.body.password;
-    if (password === "") {
-        userUpdatePromise = db.updateUserWithoutPassword(req.body);
+    if (!req.session.userid) {
+        res.redirect("/petition");
     } else {
-        userUpdatePromise = db.updateUserWithPassword(req.body);
-    }
+        // 1. Update the users table
+        // a. with password
+        // db.updateUserWithPassword
+        // Make sure you hash the password first.
+        // b. without password
+        // db.updateUserWithoutPassword
+        // 2. Update the profiles table
+        // a. we already have profile info
+        // b. no profile info yet
+        // ➡️ Use an UPSERT query
 
-    userUpdatePromise
-        .then(() => {
-            return db.upsertProfile(req.body);
-        })
-        .then(() => {
-            res.redirect("/petition");
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+        let userUpdatePromise;
+
+        // If you feel adventorous, try to do this with Promise.all()
+        // })
+        console.log("req.body: ", req.body);
+        req.body.id = req.session.userid;
+        const password = req.body.password;
+        if (password === "") {
+            userUpdatePromise = db.updateUserWithoutPassword(req.body);
+        } else {
+            userUpdatePromise = db.updateUserWithPassword(req.body);
+        }
+
+        userUpdatePromise
+            .then(() => {
+                return db.upsertProfile(req.body);
+            })
+            .then(() => {
+                res.redirect("/petition");
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
     // db.insertProfile(req.body, req.session)
     //     .then(() => {
     //         req.session.profile = true;
@@ -351,36 +371,48 @@ app.post("/petition/delete", (req, res) => {
     //     "Do you really want to delete your signature and withdraw from the petition?"
     // );
     // if (permission) {
-    console.log("req.session.userid: ", req.session.userid);
-    db.deleteSignature(req.session.userid)
-        .then(() => {
-            console.log("Signature deleted");
-            req.session.signatureid = undefined;
-            console.log(
-                "req.session.signatureid after deleting signature: ",
-                req.session.signatureid
-            );
-            // }
-            res.redirect("/petition");
-        })
-        .catch((err) => console.log("err in deleteSignature: ", err));
+    if (!reqs.session.signatureid) {
+        res.redirect("/petition");
+    } else {
+        console.log("req.session.userid: ", req.session.userid);
+        db.deleteSignature(req.session.userid)
+            .then(() => {
+                console.log("Signature deleted");
+                req.session.signatureid = undefined;
+                console.log(
+                    "req.session.signatureid after deleting signature: ",
+                    req.session.signatureid
+                );
+                // }
+                res.redirect("/petition");
+            })
+            .catch((err) => console.log("err in deleteSignature: ", err));
+    }
 });
 
 app.post("/petition/delete-account", (req, res) => {
-    // if (
-    //     confirm(
-    //         "Do you really want to delete your signature and withdraw from the petition?"
-    //     )
-    // ) {
-    console.log("req.session.userid: ", req.session.userid);
-    db.deleteAccount(req.session.userid)
-        .then(() => {
-            console.log(`Account of user ${req.session.userid} deleted`);
-            req.session = undefined;
-            // }
-            res.redirect("/register");
-        })
-        .catch((err) => console.log("err in deleteAccount: ", err));
+    if (!req.session.userid) {
+        res.redirect("/petition");
+    } else {
+        // if (
+        //     confirm(
+        //         "Do you really want to delete your signature and withdraw from the petition?"
+        //     )
+        // ) {
+        console.log("req.session.userid: ", req.session.userid);
+        db.deleteAccount(req.session.userid)
+            .then(() => {
+                console.log(`Account of user ${req.session.userid} deleted`);
+                req.session = undefined;
+                // }
+                res.redirect("/register");
+            })
+            .catch((err) => console.log("err in deleteAccount: ", err));
+    }
 });
 
-app.listen(PORT, () => console.log("petition server is listening..."));
+if (require.main == module) {
+    app.listen(PORT, () => console.log("petition server is listening..."));
+}
+
+exports.app = app;
