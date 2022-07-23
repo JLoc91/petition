@@ -1,5 +1,55 @@
 * {
-    background-color: bisque;
+    /* background-color: bisque; */
+    box-sizing: border-box;
+    margin: 0;
+}
+
+header,
+footer {
+    background-color: black;
+    color: white;
+    width: 100vw;
+    height: 8vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+footer {
+    background-color: black;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 84vh;
+    width: 100vw;
+    background-image: url("./vespa_background.jpg");
+    /* filter: contrast(0.9); */
+    background-size: cover;
+    /* position: relative; */
+}
+
+div#container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 60vw;
+    height: 84vh;
+    background-color: white;
+    opacity: 70%;
+}
+
+button#menu {
+    background-color: black;
+    color: white;
+    border-radius: 50%;
+    border: solid white 3px;
 }
 
 .hidden {
@@ -7,14 +57,27 @@
 }
 
 canvas {
-    position: absolute;
-    /* width: 65vw;
-    height: 20vh; */
+    /* position: absolute; */
+    width: 55vw;
+    height: 20vh;
     border: 3px solid red;
-    left: 200px;
-    top: 200px;
+    /* left: 200px; */
+    /* top: 200px; */
+}
+
+img#signImg {
+    border: solid red 2px;
+    width: 40vw;
+    height: auto;
 }
 
 img.icon {
     width: 20vw;
+    height: auto;
+}
+
+form#signForm {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }

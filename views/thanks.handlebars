@@ -1,5 +1,7 @@
+<main>
+    <div id="container">
 <h1>Thank you for signing our Petition!</h1>
-<img src="{{signature}}" alt="signature of petition signer" />
+<img id="signImg" src="{{signature}}" alt="signature of petition signer" />
 <a href="/signers">Here you can find all
     {{numSigner}}
     other signers from our petition.</a>
@@ -8,6 +10,8 @@
     {{>deleteAccountButton}}
 
 {{>logoutButton}}
+</div>
+</main>
 <footer>Copyright Julien 2022</footer>
 <script
     src="https://code.jquery.com/jquery-3.6.0.min.js"
