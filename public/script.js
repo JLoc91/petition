@@ -28,6 +28,16 @@ if (mobileCondition) {
 function startSignature(e) {
     e.preventDefault();
     console.log("start drawing!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    console.log("e.currentTarge: ", e.currentTarget);
+    console.log("e: ", e);
+    // console.log("window: ", window);
+
+    // console.log("e.currentTarget.offsetLeft: ", e.currentTarget.offsetLeft);
+    // console.log("e.currentTarget.offsetTop: ", e.currentTarget.offsetTop);
+    // console.log("e.currentTarget.height: ", e.currentTarget.height);
+    // console.log("e.currentTarget.width: ", e.currentTarget.width);
+    // console.log("e.currentTarget.clientHeight: ", e.currentTarget.clientHeight);
+    // console.log("e.currentTarget.clientWidth: ", e.currentTarget.clientWidth);
     trigger = true;
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2.5;
@@ -39,9 +49,13 @@ function startSignature(e) {
             e.originalEvent.touches[0].pageY - canvas.offset().top
         );
     } else {
+        // ctx.moveTo(
+        //     e.pageX - canvas.offset().left,
+        //     e.pageY - canvas.offset().top
+        // );
         ctx.moveTo(
-            e.pageX - canvas.offset().left,
-            e.pageY - canvas.offset().top
+            e.pageX - e.currentTarget.offsetLeft,
+            e.pageY - e.currentTarget.offsetTop
         );
     }
 }
@@ -61,6 +75,8 @@ function writeSignature(e) {
                 e.originalEvent.touches[0].pageX - canvas.offset().left;
             const drawY =
                 e.originalEvent.touches[0].pageY - canvas.offset().top;
+            // const drawX = e.originalEvent.touches[0].pageX;
+            // const drawY = e.originalEvent.touches[0].pageY;
             ctx.lineTo(drawX, drawY);
             ctx.stroke();
             // console.log(
@@ -68,11 +84,45 @@ function writeSignature(e) {
             //     e.originalEvent.touches[0].pageX
             // );
         } else {
-            const drawX = e.pageX - canvas.offset().left;
-            const drawY = e.pageY - canvas.offset().top;
+            // const drawX = e.pageX - canvas.offset().left;
+            // const drawY = e.pageY - canvas.offset().top;
+            const drawX = e.pageX - e.currentTarget.offsetLeft;
+            const drawY = e.pageY - e.currentTarget.offsetTop;
             ctx.lineTo(drawX, drawY);
             ctx.stroke();
-            // console.log("e.pageX: ", e.pageX);
+            console.log("e.pageX: ", e.pageX);
+            console.log(
+                "e.currentTarget.offsetLeft: ",
+                e.currentTarget.offsetLeft
+            );
+            console.log("drawX: ", drawX);
         }
     }
 }
+
+// for the menu
+// const menuButton = $("#menu");
+// const overlay = $("#overlay");
+// const navigation = $("#navigation");
+// const closeButton = $("#close-button");
+
+// menuButton.on("click", showMenu);
+// closeButton.on("click", closeMenuByButton);
+// overlay.on("click", closeMenuByOverlay);
+
+// function showMenu(e) {
+//     console.log("Menu button clicked");
+//     overlay.addClass("appear");
+//     navigation.addClass("appear", "move-to-the-left");
+// }
+// function closeMenuByButton(e) {
+//     console.log("Close button clicked");
+//     overlay.removeClass("appear");
+//     navigation.removeClass("appear", "move-to-the-left");
+// }
+
+// function closeMenuByOverlay(e) {
+//     console.log("Overlay clicked");
+//     overlay.removeClass("appear");
+//     navigation.removeClass("appear", "move-to-the-left");
+// }

@@ -101,6 +101,7 @@ app.post("/login", (req, res) => {
                 console.log("resultObj: ", resultObj);
                 if (resultObj.passwordCheck) {
                     req.session.userid = resultObj.userid;
+                    req.session.profile = true;
                     console.log("yay it worked");
                     res.redirect("/petition");
                     // } else {
@@ -242,7 +243,7 @@ app.get("/signers", (req, res) => {
 app.get("/profile", (req, res) => {
     if (req.session.profile) {
         console.log("already set or skipped profile");
-        res.redirect("/profile/edit");
+        res.redirect("/profile-edit");
     } else {
         res.render("profiles");
     }
@@ -270,7 +271,7 @@ app.post("/profile", (req, res) => {
     //4. Redirect to "/signature"
 });
 
-app.get("/profile/edit", (req, res) => {
+app.get("/profile-edit", (req, res) => {
     db.getProfileData(req.session.userid)
         .then((result) => {
             console.log("result.rows: ", result.rows);
@@ -281,7 +282,7 @@ app.get("/profile/edit", (req, res) => {
         .catch((err) => console.log("err in getProfileDate: ", err));
 });
 
-app.post("/profile/edit", (req, res) => {
+app.post("/profile-edit", (req, res) => {
     if (!req.session.userid) {
         res.redirect("/petition");
     } else {
@@ -366,6 +367,21 @@ app.get("/logout", (req, res) => {
     res.redirect("/register");
 });
 
+app.get("/petition/delete", (req, res) => {
+    if (!req.session.signatureid) {
+        res.redirect("/petition");
+    } else {
+        res.render("delete-signature");
+    }
+});
+
+app.get("/petition/delete-account", (req, res) => {
+    if (!req.session.signatureid) {
+        res.redirect("/petition");
+    } else {
+        res.render("delete-account");
+    }
+});
 app.post("/petition/delete", (req, res) => {
     // const permission = prompt(
     //     "Do you really want to delete your signature and withdraw from the petition?"

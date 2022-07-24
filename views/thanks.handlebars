@@ -1,21 +1,17 @@
 <main>
     <div id="container">
 <h1>Thank you for signing our Petition!</h1>
+<h3>With Your sgnature you made Germany's traffic a safer place ⛑</h3>
 <img id="signImg" src="{{signature}}" alt="signature of petition signer" />
 <a href="/signers">Here you can find all
     {{numSigner}}
     other signers from our petition.</a>
+    <button><a href="/petition/delete">DELETE SIGNATURE</a></button>
+    <button><a href="/petition/delete-account">DELETE ACCOUNT</a></button>
     {{>editButton}}
-    {{>deleteButton}}
-    {{>deleteAccountButton}}
+    {{!-- {{>deleteAccountButton}} --}}
 
 {{>logoutButton}}
 </div>
 </main>
-<footer>Copyright Julien 2022</footer>
-<script
-    src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-    crossorigin="anonymous"
-></script>
-<script src="/script-signers.js"></script>
+    {{>jquery}}

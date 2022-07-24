@@ -9,7 +9,7 @@
         <p>Last Name</p>
         <input type="text" name="email" value="{{profileData.[0].email}}"/>
         <p>Email Adress</p>
-        <input type="text" name="password" />
+        <input type="password" name="password" />
         <p>Password</p>
         <input type="text" name="city" value="{{profileData.[0].city}}"/>
         <p>City</p>
@@ -23,9 +23,4 @@
 <button><a href="/petition">GO BACK TO PETITION</a></button>
 {{>logoutButton}}
 </main>
-<footer>Copyright Julien 2022</footer>
-<script
-    src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
-    crossorigin="anonymous"
-></script>
+    {{>jquery}}
