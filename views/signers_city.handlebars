@@ -3,7 +3,7 @@
     <div id="container">
 <h1>Here are our signers from {{signers.[0].city}}!</h1>
 {{#each signers}}
-    <p>{{id}}
+    <li>{{id}}
         {{#if url}}
             <a href="{{url}}">{{first}} {{last}}</a>
             {{age}}
@@ -11,7 +11,7 @@
             {{first}} {{last}}
             {{age}}
         {{/if}}
-</p>
+</li>
 {{/each}}
 
 

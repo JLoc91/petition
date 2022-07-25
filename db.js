@@ -95,7 +95,17 @@ module.exports.insertUser = (first, last, email, password) => {
                 [first, last, email, hash]
             );
         })
-        .catch((err) => console.log("err in hashPassword: ", err));
+        .catch((err) => {
+            // console.log("err.message: ", err.message);
+            if (
+                err.message ===
+                'duplicate key value violates unique constraint "users_email_key"'
+            ) {
+                console.log("email already exists");
+                return "email already exists";
+            }
+            console.log("err in hashPassword: ", err);
+        });
 };
 
 // Used for Login

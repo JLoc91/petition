@@ -2,6 +2,15 @@
     /* background-color: bisque; */
     box-sizing: border-box;
     margin: 0;
+    font-family: sans-serif;
+    max-width: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 }
 
 header,
@@ -24,9 +33,21 @@ form {
     text-align: center;
 }
 
+h1 {
+    font-size: 3.25vw;
+}
+
+h2 {
+    font-size: 2vw;
+}
+a:link {
+    text-decoration: none;
+}
+
 footer {
     /* background-color: black; */
     justify-content: flex-start;
+    height: 6vh;
 }
 
 main {
@@ -35,7 +56,6 @@ main {
     align-items: center;
     justify-content: center;
 
-    height: 84vh;
     width: 100vw;
     background-image: url("./vespa_background.jpg");
     /* filter: contrast(0.9); */
@@ -49,11 +69,11 @@ div#container {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
+    min-height: 86vh;
     width: 60vw;
     max-width: 700px;
-    height: 84vh;
-    background-color: white;
-    opacity: 70%;
+    /* height: 84vh; */
+    background-color: rgba(255, 255, 255, 0.68);
 }
 
 img#menu {
@@ -99,27 +119,6 @@ form#signForm {
 }
 
 /* menu button styles */
-.event {
-    position: fixed;
-    visibility: hidden;
-    height: 100vh;
-    width: 20vw;
-    z-index: 1;
-}
-#close-button {
-    color: black;
-    /* position: absolute; */
-    font-weight: 700;
-    right: 2vw;
-    top: 2vh;
-}
-
-.menu-section {
-    /* margin-left: 5vw; */
-    /* margin-top: 5vh; */
-    color: blue;
-    font-size: 5vh;
-}
 
 #logout {
     font-size: 2.5vh;
@@ -147,7 +146,26 @@ header button {
     color: white;
     margin-inline: 3vw;
 }
-header button a:link {
-    text-decoration: none;
+a.header {
+    height: 5vh;
+    padding: 1vh;
+    font-size: 2.5vh;
+    border: solid white;
+    border-radius: 15%;
+    background-color: rgb(2, 107, 133);
     color: white;
+    margin-inline: 3vw;
+    text-align: center;
+}
+
+button.body {
+    height: 5vh;
+    padding: 1vh;
+    font-size: 2.5vh;
+    border: solid white;
+    border-radius: 15%;
+    background-color: rgb(2, 107, 133);
+    color: white;
+    margin-inline: 3vw;
+    text-align: center;
 }

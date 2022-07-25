@@ -3,6 +3,7 @@
     <div id="container">
     <h1>Account details</h1>
     <h2>Here you can change your account details</h2>
+    <br>
     <form method="post">
          <input type="text" name="first" value="{{profileData.[0].first}}"/>
         <p>First Name</p>
@@ -19,14 +20,16 @@
         <input type="text" name="city" value="{{profileData.[0].city}}"/>
         <p>City</p>
         <br>
-        <input type="number" name="age" value="{{profileData.[0].age}}"/>
+        <input type="number" min="0" name="age" value="{{profileData.[0].age}}"/>
         <p>Age</p>
         <br>
         <input type="text" name="url" value="{{profileData.[0].url}}"/>
         <p>URL</p>
         <br>
-        <button id="submit">UPDATE</button>
+        <button class="body" id="submit">UPDATE</button>
+        <br>
     </form>
+    <br>
     </div>
 
 

@@ -2,8 +2,9 @@
 <main>
     <div id="container">
 <h1>Here are our signers!</h1>
+<ul>
 {{#each signers}}
-    <p>{{id}}
+    <li>{{id}}
         {{#if city}}
             {{#if url}}
                 <a href="{{url}}">{{first}} {{last}}</a>
@@ -23,8 +24,9 @@
                 {{age}}
             {{/if}}
         {{/if}}
-    </p>
+    </li>
 {{/each}}
+</ul>
 
 </div>
 </main>

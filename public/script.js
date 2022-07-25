@@ -4,6 +4,7 @@ const submit = $("#submit");
 const signatureInput = $("[name='signature']");
 const ctx = canvas[0].getContext("2d");
 let trigger = false;
+let didDraw = false;
 const startTrigger = ["touchstart", "mousedown"];
 const moveTrigger = ["touchmove", "mousemove"];
 const endTrigger = ["touchend", "mouseup"];
@@ -61,14 +62,19 @@ function startSignature(e) {
 }
 
 function endSignature() {
-    const dataURL = canvas[0].toDataURL();
-    canvas.val(dataURL);
-    signatureInput.val(dataURL);
-    trigger = false;
+    if (didDraw) {
+        const dataURL = canvas[0].toDataURL();
+        canvas.val(dataURL);
+        signatureInput.val(dataURL);
+        trigger = false;
+    } else {
+        signatureInput.val("");
+    }
 }
 
 function writeSignature(e) {
     if (trigger) {
+        didDraw = true;
         if (mobileCondition) {
             console.log("mal wieder mobile");
             const drawX =
