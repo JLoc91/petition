@@ -1,17 +1,18 @@
+<header>    {{>editButton}}     {{>deleteAccountButton}}{{>logoutButton}} </header>
 <main>
     <div id="container">
 <h1>Thank you for signing our Petition!</h1>
 <h3>With Your sgnature you made Germany's traffic a safer place ⛑</h3>
 <img id="signImg" src="{{signature}}" alt="signature of petition signer" />
+{{>deleteButton}}
 <a href="/signers">Here you can find all
     {{numSigner}}
     other signers from our petition.</a>
-    <button><a href="/petition/delete">DELETE SIGNATURE</a></button>
-    <button><a href="/petition/delete-account">DELETE ACCOUNT</a></button>
-    {{>editButton}}
-    {{!-- {{>deleteAccountButton}} --}}
+    
 
-{{>logoutButton}}
+
+
+
 </div>
 </main>
     {{>jquery}}

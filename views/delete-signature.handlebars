@@ -1,18 +1,13 @@
+<header>{{>backToPetitionButton}}{{>logoutButton}}</header>
 <main>
     <div id="container">
 <h1>Do you really want to delete your signature?</h1>
-{{!-- <h3>With Your sgnature you made Germany's traffic a safer place ⛑</h3> --}}
-{{!-- <img id="signImg" src="{{signature}}" alt="signature of petition signer" />
-<a href="/signers">Here you can find all
-    {{numSigner}}
-    other signers from our petition.</a>
-    {{>editButton}}
-    {{>deleteButton}}
-    {{>deleteAccountButton}} --}}
-    {{>deleteButton}}
+
+<form action="/petition/delete" method="post">
+    <button>Yes, I want to delete my signature</button>
+</form>
 <button><a href="/petition">No, I want to go back to the petition</a></button>    
 
-{{>logoutButton}}
 </div>
 </main>
     {{>jquery}}

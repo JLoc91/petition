@@ -272,14 +272,18 @@ app.post("/profile", (req, res) => {
 });
 
 app.get("/profile-edit", (req, res) => {
-    db.getProfileData(req.session.userid)
-        .then((result) => {
-            console.log("result.rows: ", result.rows);
-            res.render("profiles-edit", {
-                profileData: result.rows,
-            });
-        })
-        .catch((err) => console.log("err in getProfileDate: ", err));
+    if (!req.session.userid) {
+        res.redirect("/petition");
+    } else {
+        db.getProfileData(req.session.userid, req.session.signatureid)
+            .then((result) => {
+                console.log("result.rows: ", result.rows);
+                res.render("profiles-edit", {
+                    profileData: result.rows,
+                });
+            })
+            .catch((err) => console.log("err in getProfileDate: ", err));
+    }
 });
 
 app.post("/profile-edit", (req, res) => {
@@ -376,7 +380,7 @@ app.get("/petition/delete", (req, res) => {
 });
 
 app.get("/petition/delete-account", (req, res) => {
-    if (!req.session.signatureid) {
+    if (!req.session.userid) {
         res.redirect("/petition");
     } else {
         res.render("delete-account");
@@ -387,7 +391,7 @@ app.post("/petition/delete", (req, res) => {
     //     "Do you really want to delete your signature and withdraw from the petition?"
     // );
     // if (permission) {
-    if (!req.session.signatureid) {
+    if (!req.session.userid) {
         res.redirect("/petition");
     } else {
         console.log("req.session.userid: ", req.session.userid);

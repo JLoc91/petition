@@ -83,9 +83,12 @@ module.exports.insertUser = (first, last, email, password) => {
     //2. Insert into the database with a query
     //3. Return the entire row --> not necessary???
     // so that we can store the user's id in the session!
+
     return hashPassword(password)
         .then((hash) => {
             // console.log("hash: ", hash);
+            first = capitalizeParameter(first);
+            last = capitalizeParameter(last);
             return db.query(
                 `INSERT INTO ${tableUser}(first, last, email, password)
         VALUES ($1, $2, $3, $4) returning id`,
@@ -171,15 +174,15 @@ module.exports.insertProfile = (input, cookie) => {
 //         .catch((err) => console.log("err in hashPassword: ", err));
 // };
 
-function capitalizeCity(city) {
-    let eachWord = city.toLowerCase().split(" ");
+function capitalizeParameter(par) {
+    let eachWord = par.toLowerCase().split(" ");
     for (let i = 0; i < eachWord.length; i++) {
         eachWord[i] =
             eachWord[i].charAt(0).toUpperCase() + eachWord[i].substring(1);
     }
-    let fullCity = eachWord.join(" ");
-    console.log("fullCity: ", fullCity);
-    return fullCity;
+    let fullPar = eachWord.join(" ");
+    console.log("fullPar: ", fullPar);
+    return fullPar;
 }
 
 function cleanProfileData(input) {
@@ -203,24 +206,35 @@ function cleanProfileData(input) {
     //     input.age = null;
     //     console.log("input.age after: ", input.age);
     // }
-    input.city = capitalizeCity(input.city);
+    input.city = capitalizeParameter(input.city);
     console.log("input after: ", input);
     return input;
 }
 
-module.exports.getProfileData = (userid) => {
-    return db.query(
-        `select first, last, email, age, city, url from ${tableUser}
+module.exports.getProfileData = (userid, signatureid) => {
+    if (!signatureid) {
+        return db.query(
+            `select first, last, email, age, city, url from ${tableUser}
+            left outer join ${tableProfiles}
+            on ${tableUser}.id = ${tableProfiles}.user_id
+            where ${tableUser}.id = '${userid}';`
+        );
+    } else {
+        return db.query(
+            `select first, last, email, age, city, url from ${tableUser}
             join ${tableSignature}
             on ${tableUser}.id = ${tableSignature}.user_id
             left outer join ${tableProfiles}
             on ${tableUser}.id = ${tableProfiles}.user_id
             where ${tableUser}.id = '${userid}';`
-    );
+        );
+    }
 };
 
 module.exports.updateUserWithoutPassword = (profileData) => {
     console.log("profileData: ", profileData);
+    profileData.first = capitalizeParameter(profileData.first);
+    profileData.last = capitalizeParameter(profileData.last);
     return db.query(
         `update users set first=$2, last=$3, email=$4
         WHERE id=$1`,
@@ -230,6 +244,8 @@ module.exports.updateUserWithoutPassword = (profileData) => {
 
 module.exports.updateUserWithPassword = (profileData) => {
     console.log("profileData: ", profileData);
+    profileData.first = capitalizeParameter(profileData.first);
+    profileData.last = capitalizeParameter(profileData.last);
     return hashPassword(profileData.password)
         .then((hash) => {
             profileData.password = hash;

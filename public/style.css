@@ -10,12 +10,15 @@ footer {
     color: white;
     width: 100vw;
     height: 8vh;
+    /* max-height: 30px; */
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: center;
+    align-items: center;
 }
 
 h1,
+h2,
 h3,
 form {
     text-align: center;
@@ -24,7 +27,6 @@ form {
 footer {
     /* background-color: black; */
     justify-content: flex-start;
-    align-items: center;
 }
 
 main {
@@ -32,6 +34,7 @@ main {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
     height: 84vh;
     width: 100vw;
     background-image: url("./vespa_background.jpg");
@@ -47,6 +50,7 @@ div#container {
     align-items: center;
     justify-content: space-between;
     width: 60vw;
+    max-width: 700px;
     height: 84vh;
     background-color: white;
     opacity: 70%;
@@ -55,7 +59,9 @@ div#container {
 img#menu {
     /* background-color: black; */
     width: 6vh;
+    max-width: 40px;
     height: 6vh;
+    max-height: 40px;
     /* color: white; */
     /* border-radius: 50%; */
     /* border: solid white 3px; */
@@ -65,20 +71,21 @@ img#menu {
     visibility: hidden;
 }
 
-canvas {
+canvas,
+img#signImg {
     /* position: absolute; */
-    width: 55vw;
-    height: 20vh;
+    /* width: 48vw; */
+    /* height: 16.8vh; */
     border: 3px solid rgb(1, 28, 35);
     /* left: 200px; */
     /* top: 200px; */
 }
 
-img#signImg {
+/* img#signImg {
     border: solid red 2px;
     width: 40vw;
     height: auto;
-}
+} */
 
 img.icon {
     width: 10vw;
@@ -130,4 +137,17 @@ form#signForm {
 #menu-button {
     display: flex;
     align-items: center;
+}
+
+header button {
+    height: 5vh;
+    border: solid white;
+    border-radius: 10%;
+    background-color: rgb(2, 107, 133);
+    color: white;
+    margin-inline: 3vw;
+}
+header button a:link {
+    text-decoration: none;
+    color: white;
 }

@@ -100,6 +100,20 @@ function writeSignature(e) {
     }
 }
 
+window.addEventListener("resize", resizeSignature, false);
+console.log("container: ", container);
+
+function resizeSignature() {
+    const offsetX = container.clientWidth * 0.8;
+    const offsetY = container.clientHeight * 0.2;
+    canvas[0].width = offsetX;
+    canvas[0].height = offsetY;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+window.addEventListener("load", resizeSignature, false);
+// resizeSignature();
+
 // for the menu
 // const menuButton = $("#menu");
 // const overlay = $("#overlay");

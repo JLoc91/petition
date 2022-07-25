@@ -1,20 +1,23 @@
+<header>{{>editButton}}{{>deleteAccountButton}}{{>logoutButton}}</header>
 <main>
     <div id="container">
         <h1>Sign our petition to make Germany's traffic safe again!</h1>
+        <h2>50 km/h and beyond! <br> In Germany, the maximum speed for mopeds that may be driven with the "M" driving license class is 45 km/h, which conflicts with the maximum speed within built-up areas of 50 km/h. We demand an increase of the maximum speed of mopeds to 55 km/h for safety reasons for ALL road users. </h2>
         <br>
         <h3>Have you ever been upset that once again a moped is creeping along the road in front of you, holding up all traffic, or worse, feeling unsafe because you can't keep up in traffic? Help us to put an end to this inhumane treatment of moped riders from now on! All you have to do is register, leave your signature and sit back and relax 😎</h3>
         <a
             href="https://www.flaticon.com/free-icons/scooter"
             title="scooter icons"
         ><img src="./scooter.png" alt="scooter icons" class="icon" /></a>
-        <form id="signForm" method="post">
-            <input type="text" name="signature" class="hidden" />
-            {{!-- <canvas id="canvas" width="500" height="150"></canvas> --}}
-            <canvas id="canvas" ></canvas>
+                  <canvas id="canvas" ></canvas>
             <p>Sign Here</p>
+        <form id="signForm" method="post">
+            <input type="text" name="signature" class="hidden" width="0" height="0"/>
+            {{!-- <canvas id="canvas" width="500" height="150"></canvas> --}}
+  
             <button id="submit">SUBMIT</button>
         </form>
- {{>logoutButton}}
+
  </div>
 </main>
     {{>jquery}}

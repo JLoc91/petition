@@ -1,4 +1,4 @@
-
+<header>{{>backToSignersButton}}{{>logoutButton}}</header>
 <main>
     <div id="container">
 <h1>Here are our signers from {{signers.[0].city}}!</h1>
@@ -13,8 +13,8 @@
         {{/if}}
 </p>
 {{/each}}
-<p><a href="/signers">Go back to Signers</a></p>
-{{>logoutButton}}
+
+
 </div>
 </main>
     {{>jquery}}
