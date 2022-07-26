@@ -467,7 +467,10 @@ app.post("/petition/delete-account", (req, res) => {
                 console.log(`Account of user ${req.session.userid} deleted`);
                 req.session = undefined;
                 // }
-                res.redirect("/register");
+                res.render("register", {
+                    delete: true,
+                });
+                // res.redirect("/register");
             })
             .catch((err) => console.log("err in deleteAccount: ", err));
     }

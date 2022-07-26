@@ -152,14 +152,23 @@ form#signForm {
     align-items: center;
 }
 
+button a,
 header button {
     height: 5vh;
-    border: solid white;
     border-radius: 10%;
     background-color: rgb(2, 107, 133);
     color: white;
     margin-inline: 3vw;
 }
+
+header button {
+    border: solid white;
+}
+
+li {
+    font-size: 1.2rem;
+}
+
 a.header {
     height: 5vh;
     padding: 1vh;

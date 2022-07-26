@@ -8,6 +8,11 @@
             href="https://www.flaticon.com/free-icons/scooter"
             title="scooter icons"
         ><img src="./scooter.png" alt="scooter icons" class="icon" /></a>
+                    {{#if delete}}
+                    <br>
+                      <p class="error">!!!ACCOUNT SUCCESSFULLY DELETED!!!</p>
+            <br>
+                    {{/if}}
         <form method="post">
             <input type="text" name="first" />
             <p>First Name</p>
