@@ -14,6 +14,10 @@
         <form id="signForm" method="post">
             <input type="text" name="signature" class="hidden" width="0" height="0"/>
             {{!-- <canvas id="canvas" width="500" height="150"></canvas> --}}
+            {{#if error}}
+            <p class="error">!!!SIGNATURE MUST NOT BE EMPTY!!!</p>
+            <br>
+            {{/if}}
   
             <button class="body" id="submit">SUBMIT</button>
             <br>

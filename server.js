@@ -68,7 +68,10 @@ app.post("/register", (req, res) => {
             req.body.password === ""
         ) {
             console.log("!!!ALL FIELDS MUST BE FILLED!!!");
-            return res.redirect("/register");
+            console.log("!!!ALL FIELDS MUST BE FILLED!!!");
+            res.render("register", {
+                error: true,
+            });
         }
         db.insertUser(
             req.body.first,
@@ -107,7 +110,10 @@ app.post("/login", (req, res) => {
     } else {
         if (req.body.email === "" || req.body.password === "") {
             console.log("!!!ALL FIELDS MUST BE FILLED!!!");
-            return res.redirect("/login");
+            res.render("login", {
+                error: true,
+            });
+            // return res.redirect("/login");
         } else {
             db.authenticate(req.body.email, req.body.password)
                 .then((resultObj) => {
@@ -192,7 +198,9 @@ app.post("/petition", (req, res) => {
         // if(req.body.signature === )
         if (req.body.signature === "") {
             console.log("SIGNATURE MUST NOT BE EMPTY!!!");
-            res.redirect("/petition");
+            res.render("home", {
+                error: true,
+            });
         } else {
             db.addSigner(req.session.userid, req.body.signature)
                 .then((result) => {
@@ -330,7 +338,9 @@ app.post("/profile-edit", (req, res) => {
             console.log(
                 "!!!FIRST, LAST, EMAIL AND PASSWORD MUST NOT BE EMPTY!!!"
             );
-            res.redirect("/profile-edit");
+            res.render("profiles-edit", {
+                error: true,
+            });
         } else {
             let userUpdatePromise;
 

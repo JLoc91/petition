@@ -11,8 +11,8 @@
         <input type="text" name="last" value="{{profileData.[0].last}}"/>
         <p>Last Name</p>
         <br>
-        <input type="text" name="email" value="{{profileData.[0].email}}"/>
-        <p>Email Adress</p>
+        <input type="email" name="email" value="{{profileData.[0].email}}"/>
+        <p>Email</p>
         <br>
         <input type="password" name="password" />
         <p>Password</p>
@@ -26,6 +26,10 @@
         <input type="text" name="url" value="{{profileData.[0].url}}"/>
         <p>URL</p>
         <br>
+        {{#if error}}
+        <p class="error">!!!FIRST, LAST, EMAIL AND PASSWORD MUST NOT BE EMPTY!!!</p>
+        <br>
+        {{/if}}
         <button class="body" id="submit">UPDATE</button>
         <br>
     </form>

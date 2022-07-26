@@ -2,6 +2,12 @@
 <main>
     <div id="container">
         <h1>Please Register to sign our Petition!</h1>
+
+        <h2>50 km/h and beyond! <br> In Germany, the maximum speed for mopeds that may be driven with the "M" driving license class is 45 km/h, which conflicts with the maximum speed within built-up areas of 50 km/h. We demand an increase of the maximum speed of mopeds to 55 km/h for safety reasons for ALL road users. </h2>
+                <a
+            href="https://www.flaticon.com/free-icons/scooter"
+            title="scooter icons"
+        ><img src="./scooter.png" alt="scooter icons" class="icon" /></a>
         <form method="post">
             <input type="text" name="first" />
             <p>First Name</p>
@@ -9,12 +15,16 @@
             <input type="text" name="last" />
             <p>Last Name</p>
             <br>
-            <input type="text" name="email" />
-            <p>Email Adress</p>
+            <input type="email" name="email" />
+            <p>Email</p>
             <br>
             <input type="password" name="password" />
             <p>Password</p>
             <br>
+            {{#if error}}
+            <p class="error">!!!ALL FIELDS MUST BE FILLED!!!</p>
+            <br>
+            {{/if}}
             <button class="body" id="submit">REGISTER</button>
             <br>
         </form>

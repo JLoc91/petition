@@ -34,11 +34,21 @@ form {
 }
 
 h1 {
-    font-size: 3.25vw;
+    /* font-size: 3.25vw; */
+    font-size: 2.8rem;
+    padding-bottom: 1rem;
 }
 
 h2 {
-    font-size: 2vw;
+    /* font-size: 2vw; */
+    padding: 1rem 0;
+    font-size: 1.5rem;
+}
+
+h3 {
+    /* font-size: 2vw; */
+    padding: 1rem 0;
+    font-size: 1.2rem;
 }
 a:link {
     text-decoration: none;
@@ -68,12 +78,16 @@ div#container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-around;
     min-height: 86vh;
     width: 60vw;
-    max-width: 700px;
+    max-width: 850px;
     /* height: 84vh; */
     background-color: rgba(255, 255, 255, 0.68);
+}
+
+p.error {
+    color: red;
 }
 
 img#menu {

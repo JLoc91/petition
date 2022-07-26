@@ -3,12 +3,16 @@
     <div id="container">
     <h1>Please Log in to sign our Petition!</h1>
     <form method="post">
-        <input type="text" name="email" />
-        <p>Email Adress</p>
+        <input type="email" name="email" />
+        <p>Email</p>
         <br>
         <input type="password" name="password" />
         <p>Password</p>
         <br>
+        {{#if error}}
+        <p class="error">!!!ALL FIELDS MUST BE FILLED!!!</p>
+        <br>
+        {{/if}}
         <button class="body" id="submit">LOGIN</button>
     </form>
 {{>registerLink}}
