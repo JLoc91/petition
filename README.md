@@ -2,6 +2,7 @@
 
 This repository contains my 2nd project which I developed at SPICED-ACADEMY.
 Stack: Express | Express-Handlebars | Node | PostgreSQL
+https://moped-freedom.herokuapp.com/register
 
 It's a petition page which is developed as a single page application. The frontend is developed in React.js and the backend in Node.js. At the beginning of this project we got introduced to class components therefore some of the used React components are still class components.
 
