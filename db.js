@@ -261,7 +261,7 @@ module.exports.updateUserWithPassword = (profileData) => {
             profileData.password = hash;
             return db.query(
                 `update users set first=$2, last=$3, email=$4, password=$5
-                WHERE id=$1`,
+                WHERE id=$1`,   
                 [
                     profileData.id,
                     profileData.first,
